@@ -5,9 +5,9 @@ pages_build_output_dir = "./dist"
 # [vars]
 # MY_VAR = "my-variable"
 
-# [[kv_namespaces]]
-# binding = "MY_KV_NAMESPACE"
-# id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+[[kv_namespaces]]
+binding = "KV"
+preview_id = "5b329ead3afd406f97afa3d67cf0653c"
 
 # [[r2_buckets]]
 # binding = "MY_BUCKET"
