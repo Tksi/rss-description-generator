@@ -7,7 +7,7 @@ pages_build_output_dir = "./dist"
 
 [[kv_namespaces]]
 binding = "KV"
-id = "5b329ead3afd406f97afa3d67cf0653c"
+id = "aa2df34dd8a4475892e34deef213a40b"
 
 # [[r2_buckets]]
 # binding = "MY_BUCKET"
