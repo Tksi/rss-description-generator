@@ -13,7 +13,8 @@
     "fix": "prettier . --cache --write --log-level warn --ignore-path .gitignore; npm run lint:check -- --fix; npm run type:check"
   },
   "dependencies": {
-    "hono": "^4.5.5"
+    "hono": "^4.5.5",
+    "valibot": "^0.37.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240529.0",

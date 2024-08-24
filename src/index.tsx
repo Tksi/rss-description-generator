@@ -1,4 +1,6 @@
 import { Hono } from 'hono';
+import { validator } from 'hono/validator';
+import * as v from 'valibot';
 import { renderer } from './renderer';
 
 type Bindings = {
@@ -13,11 +15,32 @@ app.get('/', (c) => {
   return c.render(<h1>Hello!</h1>);
 });
 
-app.get('/kv', async (c) => {
-  await c.env.KV.put('name', 'test');
-  const name = await c.env.KV.get('name');
-
-  return c.render(<h1>Hell! {name}</h1>);
+const schema = v.object({
+  unixTime: v.pipe(
+    v.string(),
+    v.transform(Number),
+    v.number(),
+    v.safeInteger(),
+  ),
+  rssUrl: v.pipe(v.string(), v.url()),
 });
+
+app.get(
+  '/:unixTime/:rssUrl{.+$}',
+  validator('param', (value, c) => {
+    const result = v.safeParse(schema, value);
+
+    if (!result.success) {
+      return c.json(result.issues, 422);
+    }
+
+    return result.output;
+  }),
+  (c) => {
+    const { unixTime, rssUrl } = c.req.valid('param');
+
+    return c.render(<h1>Hello!</h1>);
+  },
+);
 
 export default app;
