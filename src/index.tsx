@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { validator } from 'hono/validator';
+import { hello } from 'lib/hello';
 import * as v from 'valibot';
 import { renderer } from './renderer';
 
@@ -39,7 +40,9 @@ app.get(
   (c) => {
     const { unixTime, rssUrl } = c.req.valid('param');
 
-    return c.render(<h1>Hello!</h1>);
+    console.log(hello());
+
+    return c.render(<h1>{`${unixTime} ${rssUrl}`}</h1>);
   },
 );
 
