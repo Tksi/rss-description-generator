@@ -1,4 +1,3 @@
-import { Feed } from 'feed';
 import type { FeedData, FeedEntry } from '@extractus/feed-extractor';
 
 /**

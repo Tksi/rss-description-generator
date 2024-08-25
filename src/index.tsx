@@ -69,8 +69,7 @@ app.get(
     // @ts-expect-error Honoのバグ?
     const ENV = env<ENV>(c);
     const { KV } = c.env;
-    const { unixTime, rss, rssUrl } = c.req.valid('param');
-    console.log(rssUrl);
+    const { unixTime, rss } = c.req.valid('param');
 
     rss.entries = await replaceDescription(
       ENV,
