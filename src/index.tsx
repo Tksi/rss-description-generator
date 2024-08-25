@@ -1,11 +1,21 @@
 import { Hono } from 'hono';
+import { env } from 'hono/adapter';
 import { validator } from 'hono/validator';
-import { hello } from 'lib/hello';
+import { generateRss } from 'lib/generateRss';
+import { replaceDescription } from 'lib/replaceDescription';
+import Parser from 'rss-parser';
 import * as v from 'valibot';
 import { renderer } from './renderer';
 
+const parser = new Parser();
+
 type Bindings = {
   KV: KVNamespace;
+};
+
+export type ENV = {
+  JINA_API_KEY: string;
+  GEMINI_API_KEY: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -28,21 +38,39 @@ const schema = v.object({
 
 app.get(
   '/:unixTime/:rssUrl{.+$}',
-  validator('param', (value, c) => {
+  validator('param', async (value, c) => {
     const result = v.safeParse(schema, value);
 
     if (!result.success) {
       return c.json(result.issues, 422);
     }
 
-    return result.output;
+    let rss: Awaited<ReturnType<(typeof parser)['parseURL']>>;
+
+    try {
+      rss = await parser.parseURL(result.output.rssUrl);
+    } catch (err) {
+      if (err instanceof Error) {
+        return c.json({ rssParseError: err.message }, 422);
+      }
+
+      throw err;
+    }
+
+    return {
+      ...result.output,
+      rss,
+    };
   }),
-  (c) => {
-    const { unixTime, rssUrl } = c.req.valid('param');
+  async (c) => {
+    // @ts-expect-error Honoのバグ?
+    const ENV = env<ENV>(c);
+    const { KV } = c.env;
+    const { unixTime, rss } = c.req.valid('param');
 
-    console.log(hello());
+    rss.items = await replaceDescription(ENV, KV, rss.items, unixTime);
 
-    return c.render(<h1>{`${unixTime} ${rssUrl}`}</h1>);
+    return c.json(rss.items);
   },
 );
 

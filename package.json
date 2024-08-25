@@ -13,7 +13,11 @@
     "fix": "prettier . --cache --write --log-level warn --ignore-path .gitignore; npm run lint:check -- --fix; npm run type:check"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.17.1",
+    "feed": "^4.2.2",
     "hono": "^4.5.5",
+    "ky": "^1.7.1",
+    "rss-parser": "^3.13.0",
     "valibot": "^0.37.0"
   },
   "devDependencies": {
