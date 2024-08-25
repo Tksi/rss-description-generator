@@ -67,11 +67,14 @@ app.get(
     const { KV } = c.env;
     const { unixTime, rss } = c.req.valid('param');
 
-    return c.json(rss);
+    rss.entries = await replaceDescription(
+      ENV,
+      KV,
+      rss.entries ?? [],
+      unixTime,
+    );
 
-    rss.items = await replaceDescription(ENV, KV, rss.items, unixTime);
-
-    return c.json(rss.items);
+    return c.json(rss.entries);
   },
 );
 
