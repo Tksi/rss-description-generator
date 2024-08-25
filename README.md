@@ -25,3 +25,10 @@ npm run dev
 ## Deploy
 
 set API keys(`JINA_API_KEY`, `GEMINI_API_KEY`) to enviroment variable
+
+## Endpoint
+
+`/:unixTime/:rssUrl`
+
+- unixTime : the article description for pubDate after this value will be replaced by a auto generated summary (set 0 to replace all)
+- rssUrl : target rssUrl
