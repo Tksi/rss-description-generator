@@ -1,30 +1,32 @@
 import { Feed } from 'feed';
-import type { FeedData } from '@extractus/feed-extractor';
+import type { FeedData, FeedEntry } from '@extractus/feed-extractor';
 
 /**
  * RSS生成
  * @param rss RSSオブジェクト
- * @returns RSS
+ * @returns RSS(Atom1.0)
  */
 export const generateRss = (rss: FeedData): string => {
-  const feed = new Feed({
-    title: rss.title ?? '',
-    description: rss.description ?? '',
-    id: rss.link ?? '',
-    link: rss.link ?? '',
-    copyright: '',
-    updated: new Date(rss.published ?? ''),
-  });
+  const atom1 = `<?xml version="1.0" encoding="utf-8"?>
+  <feed xmlns="http://www.w3.org/2005/Atom">
+    <id>${rss.link}</id>
+    <title>${rss.title}</title>
+    <updated>${rss.published}</updated>
+    <generator>https://github.com/Tksi/rss-description-generator</generator>
+    <link rel="alternate" href="${rss.link}"/>
+    ${(rss.entries ?? []).map((entry) => generateEntries(entry)).join('\n')}
+  </feed>
+  `;
 
-  for (const feedEntry of rss.entries ?? []) {
-    feed.addItem({
-      title: feedEntry.title ?? '',
-      id: feedEntry.id,
-      link: feedEntry.link ?? '',
-      date: new Date(feedEntry.published ?? ''),
-      description: feedEntry.description ?? '',
-    });
-  }
+  return atom1;
+};
 
-  return feed.atom1();
+const generateEntries = (entry: FeedEntry): string => {
+  return `<entry>
+  <title type="html"><![CDATA[${entry.title}]]></title>
+  <id>${entry.id}</id>
+  <link href="${entry.link}"/>
+  <updated>${entry.published}</updated>
+  <summary type="html"><![CDATA[${entry.description}]]></summary>
+</entry>`;
 };

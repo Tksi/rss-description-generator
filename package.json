@@ -15,7 +15,6 @@
   "dependencies": {
     "@extractus/feed-extractor": "github:Tksi/feed-extractor",
     "@google/generative-ai": "^0.17.1",
-    "feed": "^4.2.2",
     "hono": "^4.5.5",
     "ky": "^1.7.1",
     "valibot": "^0.37.0"
