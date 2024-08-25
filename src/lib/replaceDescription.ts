@@ -1,4 +1,3 @@
-import { loadEnv } from 'vite';
 import { summerizeWebPage } from './summerizeWebPage';
 import type { ENV } from 'index';
 import type Parser from 'rss-parser';
