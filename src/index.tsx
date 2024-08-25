@@ -38,7 +38,11 @@ const schema = v.object({
 app.get(
   '/:unixTime/:rssUrl{.+$}',
   validator('param', async (value, c) => {
-    const result = v.safeParse(schema, value);
+    const searchParams = new URL(c.req.url).searchParams;
+    const result = v.safeParse(schema, {
+      ...value,
+      rssUrl: `${value.rssUrl}${searchParams.size > 0 ? '?' + searchParams.toString() : ''}`,
+    });
 
     if (!result.success) {
       return c.json(result.issues, 422);
@@ -65,7 +69,8 @@ app.get(
     // @ts-expect-error Honoのバグ?
     const ENV = env<ENV>(c);
     const { KV } = c.env;
-    const { unixTime, rss } = c.req.valid('param');
+    const { unixTime, rss, rssUrl } = c.req.valid('param');
+    console.log(rssUrl);
 
     rss.entries = await replaceDescription(
       ENV,
