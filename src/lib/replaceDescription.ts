@@ -34,10 +34,14 @@ export const replaceDescription = (
 
       // baseUnixTimeより新しい記事のみ要約を生成
       if (baseUnixTime * 1000 <= new Date(item.published ?? '').getTime()) {
-        description = await summerizeWebPage(ENV, item.link);
-        void KV.put(item.link, description, {
-          expirationTtl: 60 * 60 * 24 * 28,
-        });
+        try {
+          description = await summerizeWebPage(ENV, item.link);
+          void KV.put(item.link, description, {
+            expirationTtl: 60 * 60 * 24 * 28,
+          });
+        } catch {
+          /* empty */
+        }
       }
 
       return {
