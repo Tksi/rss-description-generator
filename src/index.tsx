@@ -1,6 +1,7 @@
 import { extract } from '@extractus/feed-extractor';
 import { Hono } from 'hono';
 import { env } from 'hono/adapter';
+import { cache } from 'hono/cache';
 import { validator } from 'hono/validator';
 import { generateRss } from 'lib/generateRss';
 import { replaceDescription } from 'lib/replaceDescription';
@@ -36,6 +37,10 @@ const schema = v.object({
 
 app.get(
   '/:unixTime/:rssUrl{.+$}',
+  cache({
+    cacheName: 'rss',
+    cacheControl: 'max-age=3600',
+  }),
   validator('param', async (value, c) => {
     const searchParams = new URL(c.req.url).searchParams;
     const result = v.safeParse(schema, {
