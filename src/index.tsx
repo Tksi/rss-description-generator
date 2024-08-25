@@ -74,7 +74,9 @@ app.get(
       unixTime,
     );
 
-    return c.json(rss.entries);
+    return c.body(generateRss(rss), 200, {
+      'Content-type': 'application/xml;charset=utf-8',
+    });
   },
 );
 

@@ -16,5 +16,15 @@ export const generateRss = (rss: FeedData): string => {
     updated: new Date(rss.published ?? ''),
   });
 
+  for (const feedEntry of rss.entries ?? []) {
+    feed.addItem({
+      title: feedEntry.title ?? '',
+      id: feedEntry.id,
+      link: feedEntry.link ?? '',
+      date: new Date(feedEntry.published ?? ''),
+      description: feedEntry.description ?? '',
+    });
+  }
+
   return feed.atom1();
 };
