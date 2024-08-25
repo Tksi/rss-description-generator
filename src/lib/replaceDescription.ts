@@ -2,14 +2,22 @@ import { summerizeWebPage } from './summerizeWebPage';
 import type { FeedEntry } from '@extractus/feed-extractor';
 import type { ENV } from 'index';
 
+/**
+ * RSS記事オブジェクトのdescriptionを要約に置き換え
+ * @param ENV APIキー
+ * @param KV cloudflare KV
+ * @param feedEntries RSS記事オブジェクトの配列
+ * @param baseUnixTime 基準unixtime
+ * @returns descriptionを要約に置き換えたfeedEntries
+ */
 export const replaceDescription = (
   ENV: ENV,
   KV: KVNamespace,
-  rssItems: FeedEntry[],
+  feedEntries: FeedEntry[],
   baseUnixTime: number = 0,
 ): Promise<FeedEntry[]> => {
   return Promise.all(
-    rssItems.map(async (item) => {
+    feedEntries.map(async (item) => {
       if (item.link === undefined) return item;
 
       const cachedDescription = await KV.get(item.link);

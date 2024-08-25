@@ -32,6 +32,12 @@ const getWebPage = (url: string, JINA_API_KEY?: string) => {
     .then(({ data: { content } }) => stripLinkFromMarkdown(content));
 };
 
+/**
+ * Webページを要約
+ * @param ENV APIキー
+ * @param url 記事URL
+ * @returns 要約
+ */
 export const summerizeWebPage = async (ENV: ENV, url: string) => {
   const { JINA_API_KEY, GEMINI_API_KEY } = ENV;
   const content = await getWebPage(url, JINA_API_KEY);
