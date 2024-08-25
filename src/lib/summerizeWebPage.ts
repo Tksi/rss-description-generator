@@ -1,35 +1,23 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { Readability } from '@mozilla/readability';
 import ky from 'ky';
+import { parseHTML } from 'linkedom';
 import type { ENV } from 'index';
-import type { Options } from 'ky';
+import type { HTMLElement } from 'linkedom';
 
-const stripLinkFromMarkdown = (markdown: string) => {
-  return markdown.replace(/\[(.+?)]\(.+?\)/g, (_, p1) => `[${p1}]()`);
-};
+const getWebPage = async (url: string) => {
+  const html = await ky(url).text();
+  // @ts-expect-error linkedomの型がおかしい
+  const { document } = parseHTML(html);
+  const article = new Readability(document, {
+    serializer: (el: HTMLElement) => el.textContent,
+  }).parse();
 
-const getWebPage = (url: string, JINA_API_KEY?: string) => {
-  const headers: Options['headers'] = {
-    Accept: 'application/json',
-  };
-
-  if (JINA_API_KEY !== undefined) {
-    headers.Authorization = `Bearer ${JINA_API_KEY}`;
+  if (article === null) {
+    throw new Error('Readability returned null');
   }
 
-  return ky<{
-    code: number;
-    status: number;
-    data: {
-      title: string;
-      url: string;
-      content: string;
-      usage: {
-        tokens: number;
-      };
-    };
-  }>(`https://r.jina.ai/${url}`, { headers })
-    .json()
-    .then(({ data: { content } }) => stripLinkFromMarkdown(content));
+  return article.content.replace(/[\t\r]/g, '');
 };
 
 /**
@@ -39,8 +27,8 @@ const getWebPage = (url: string, JINA_API_KEY?: string) => {
  * @returns 要約
  */
 export const summerizeWebPage = async (ENV: ENV, url: string) => {
-  const { JINA_API_KEY, GEMINI_API_KEY } = ENV;
-  const content = await getWebPage(url, JINA_API_KEY);
+  const { GEMINI_API_KEY } = ENV;
+  const content = await getWebPage(url);
 
   const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
   const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
