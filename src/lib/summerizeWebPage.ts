@@ -31,7 +31,7 @@ export const summerizeWebPage = async (ENV: ENV, url: string) => {
   const content = await getWebPage(url);
 
   const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
   const prompt = `日本語で2文で要約せよ。\n${content}`;
   const result = await model.generateContent(prompt);
 
