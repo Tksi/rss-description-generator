@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 import { Readability } from '@mozilla/readability';
 import ky from 'ky';
 import { parseHTML } from 'linkedom';
@@ -30,10 +30,12 @@ export const summerizeWebPage = async (ENV: ENV, url: string) => {
   const { GEMINI_API_KEY } = ENV;
   const content = await getWebPage(url);
 
-  const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+  const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
   const prompt = `日本語で2文で要約せよ。\n${content}`;
-  const result = await model.generateContent(prompt);
+  const result = await ai.models.generateContent({
+    model: 'gemini-flash-lite-latest',
+    contents: prompt,
+  });
 
-  return result.response.text();
+  return result.text ?? '';
 };
