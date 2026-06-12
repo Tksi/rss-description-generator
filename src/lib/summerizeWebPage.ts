@@ -33,7 +33,7 @@ export const summerizeWebPage = async (ENV: ENV, url: string) => {
   const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
   const prompt = `日本語で2文で要約せよ。\n${content}`;
   const result = await ai.models.generateContent({
-    model: 'gemini-flash-lite-latest',
+    model: 'gemma-4-31b-it',
     contents: prompt,
   });
 
